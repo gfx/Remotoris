@@ -1,4 +1,5 @@
 #!perl
+# Usage: twiggy app.psgi
 use strict;
 use warnings;
 
@@ -25,13 +26,14 @@ builder {
             print help();
             print "->> ";
             while (my $key = ReadKey(0)) {
+                print "<$key>";
                 if( $key eq "\cC" ) {
-                    die "Interrupt!\n";
+                    warn "Interrupt!\n";
+                    exit(1);
                 }
                 elsif( $key eq 'q' ) {
-                    exit;
+                    exit(0);
                 }
-                print "<$key>";
                 $self->send_message({ key => ord($key) });
             }
         },
