@@ -6,11 +6,24 @@ use warnings;
 use PocketIO;
 use Plack::Builder;
 use IO::Handle;
-use Term::ReadKey qw(ReadMode ReadKey);
 STDOUT->autoflush();
 
-ReadMode 'raw';
-END{ ReadMode 'restore' }
+{
+    package ReadKey::Guard;
+    use Term::ReadKey qw(ReadMode ReadKey);
+    sub new {
+        my($class, $mode) = @_;
+        ReadMode($mode);
+        return bless {}, $class;
+    }
+    sub readkey {
+        my($self, $mode) = @_;
+        return ReadKey($mode);
+    }
+    sub DESTROY {
+        ReadMode('restore');
+    }
+}
 
 sub help {
     return <<'T';
@@ -25,7 +38,8 @@ builder {
             my($self) = @_;
             print help();
             print "->> ";
-            while (my $key = ReadKey(0)) {
+            my $guard = ReadKey::Guard->new('raw');
+            while (my $key = $guard->readkey(0)) {
                 print "<$key>";
                 if( $key eq "\cC" ) {
                     warn "Interrupt!\n";
