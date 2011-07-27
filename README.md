@@ -6,6 +6,6 @@ and then operate blocks via the console with hjkl keys.
 Prerequisites
 ================
 - Term::ReadKey
-- Plack    
+- Twiggy 
 - PocketIO https://github.com/vti/pocketio
 
